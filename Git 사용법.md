@@ -1,4 +1,4 @@
-﻿# Git
+# Git
 
 > Git은 분산버전관리시스템(DVCS)이다.
 
@@ -8,7 +8,7 @@
 
 ## 설정
 
-### 1. author 설정
+####  1. author 설정
 
 ```bash
 $ git config --global user.name {사용자 이름}
@@ -20,12 +20,13 @@ $ git config --global user.email {사용자 이메일}
 - 설정 정보를 확인하려면, 아래의 명령어를 입력한다.
 
   ```bash
-  $ git config --global list
+  $ git config --global list2
   ```
 
-  
 
-### 기초 명령어(로컬 저장소 활용)
+
+
+## 기초 명령어(로컬 저장소 활용)
 
 1. 로컬 저장소 초기화
 
@@ -37,6 +38,9 @@ $ git config --global user.email {사용자 이메일}
 
    - `.git/` 폴더가 생성되며, git에 대한 모든 정보가 해당 폴더에 기록된다.
    - `bash` 에 `(master)` 라는 표기를 통해 현재 저장소로 활용되고 있음을 알 수 있다.
+   -  `.gitignore` 파일을 생성하여 프로젝트에서 이력에 담지 않을 파일을 관리하자.
+     - `__pycache__/`, `ipynb_checkpoints/` 등등..
+     - [gitignore.io](https://www.gitignore.io/)를 통해 자동 생성도 가능하다.
 
 2. `add`
 
@@ -133,7 +137,7 @@ $ git config --global user.email {사용자 이메일}
 
 
 
-## 멀캠 - 집 개인 활용 시나리오
+### 멀캠 - 집 개인 활용 시나리오
 
 1. 멀캠 도착했을 때,
 
@@ -162,3 +166,126 @@ $ git config --global user.email {사용자 이메일}
    $ git commit -m {}
    $ git push origin master
    ```
+
+## 단순 되돌리기
+
+1. unstaged : `add` 명령어의 반대 작업
+
+   - 상황
+
+     ```bash
+     $ touch file.txt
+     $ git add file.txt
+     ```
+
+   - `git status`
+
+     ```bash
+     $ git status
+     On branch master
+     Your branch is ahead of 'origin/master' by 2 commits.
+     ```
+
+   (use "git push" to publish your local commits)
+
+   ```bash
+   Changes to be committed:
+      (use "git restore --staged <file>..." to unstage)
+            deleted:    file1.txt
+   ```
+
+   - 취소
+
+     ```bash
+     $ git restore --staged file.txt # 1. 최근 command
+     $ git reset HEAD file.txt # 2. 과거 command
+     ```
+
+2. 커밋 메시지 수정 : `commit` 의 반대 상황
+
+   - 상황
+
+     ```bash
+     $ git commit -m 'Add file.txt'
+     ```
+
+   - 확인
+
+     ```bash
+     $ git log --online
+     ```
+
+   - 커밋 메시지 수정
+
+     ```bash
+     $ git commit --amend
+     ```
+
+     - vim 에디터로 커밋 메시지를 수정할 수 있게끔 해준다.
+       - `i` : 편집 모드
+       - esc + `:wq` : 저장 및 종료
+         - `w` : write, `q` : quit
+
+     - **중요!!** 커밋 메시지를 수정하면 커밋 해시값이 변경되어 전혀 다른 이력으로 기록된다. 따라서 원격 저장소에 올라간 이력은 절대 변경하지 않는다!
+
+   - 추가 활용 (커밋 대상 파일을 누락했을 때)
+
+     ```bash
+     $ git add file1.txt
+     $ git commit -m 'Add file1.txt file2.txt'
+     $ git add file2.txt # 누락된 파일을 staging
+     $ git commit --amend # 커밋 수정
+     ```
+
+3. `working directory` 변경사항 버리기
+
+   - 상황
+
+     file1.txt를 고양이가 지워버렸다.
+
+   - `git status`
+
+     ```bash
+     $ git status
+     On branch master
+     Your branch is ahead of 'origin/master' by 2 commits.
+       (use "git push" to publish your local commits)
+     
+     Changes not staged for commit:
+       (use "git add <file>..." to update what will be committed)
+       (use "git restore <file>..." to discard changes in working directory)
+             modified:   a.txt
+     ```
+
+   - 해결
+
+     ```bash
+     $ git restore file1.txt # 1. 최근 command
+     $ git  checkout --file1.txt # 과거 command
+     ```
+
+   - **주의!!** 커밋하지 않은 이력은 다시 되돌릴 수 없다. 즉, 이 명령어를 사용하면 다시 되돌릴 수는 없다!
+
+4. 이력에서 특정 파일 제거하기
+
+   로컬에 실제 파일이 삭제되지는 않지만, 삭제되는 커밋이 발생됨.
+
+   따라서, `.gitignore` 와 같이 활용하면, 더이상 해당 파일이 관리되지 않도록 할 수 있음.
+
+   예시) `.ipynb_checkpoints`, `__pycache__/`
+
+   - `.gitignore` 등록 (VS code가 편리함)
+
+   ```bash
+   __pycache__
+   ```
+
+   - 명령어
+
+     ```bash
+     $ git rm --cached __pycache__
+     $ git commit -m ''
+     ```
+
+     
+
